@@ -170,8 +170,3 @@ dist
 
 .dev.vars
 .wrangler/
-
-
-# Added by cargo
-
-/target
