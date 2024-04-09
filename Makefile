@@ -26,6 +26,10 @@
 	$(.check-for-rust)
 	npm install
 	rustup target add wasm32-unknown-unknown
+
+# default
+dev:
+	npx wrangler dev
 	
 create-new:
 	npx wrangler generate tmp https://github.com/cloudflare/workers-sdk/templates/experimental/worker-rust
@@ -34,6 +38,3 @@ create-new:
 
 deploy:
 	npx wrangler deploy
-
-dev:
-	npx wrangler dev
