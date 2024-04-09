@@ -1,14 +1,4 @@
 [package]
-<<<<<<< HEAD
-name = "apis"
-version = "0.1.0"
-edition = "2021"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
-[dependencies]
-suppaftp = "5.3.1"
-=======
 name = "worker-rust"
 version = "0.1.0"
 edition = "2021"
@@ -24,4 +14,3 @@ opt-level = "s" # optimize for size in release builds
 lto = true
 strip = true
 codegen-units = 1
->>>>>>> 3f6db98e962ccef57ace60fc399b16b6723c0761
