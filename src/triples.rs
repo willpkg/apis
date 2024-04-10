@@ -6,6 +6,7 @@ pub enum Os {
     Linux // currently only Linux is supported
 }
 
+#[derive(Debug)]
 pub enum Arch { // everything supported by dpkg (we rip their binaries from .deb files)
     Amd64,
     Arm64,
@@ -36,6 +37,23 @@ impl Triple {
             os: os,
             arch: arch,
             toolchain: toolchain
+        }
+    }
+}
+
+impl core::fmt::Display for Arch {
+    fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
+        match self {
+            Arch::Amd64 => write!(f, "amd64"),
+            Arch::Arm64 => write!(f, "arm64"),
+            Arch::Armel => write!(f, "armel"),
+            Arch::Armhf => write!(f, "armhf"),
+            Arch::I386 => write!(f, "i386"),
+            Arch::Mips => write!(f, "mips"),
+            Arch::Mips64el => write!(f, "mips64el"),
+            Arch::Mipsel => write!(f, "mipsel"),
+            Arch::Ppc64el => write!(f, "ppc64el"),
+            Arch::S390x => write!(f, "s390x")
         }
     }
 }

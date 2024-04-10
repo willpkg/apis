@@ -1,40 +1,56 @@
-use suppaftp::FtpStream;
-
 use crate::{defs::Package, triples::{Arch, Triple}};
 
-struct DebianFtp {
-    ftp: FtpStream
+use select::document::Document;
+use select::predicate::Name;
+use reqwest::blocking::get;
+
+pub struct DebianFtp {
 }
 
 impl DebianFtp {
-    fn new() -> DebianFtp {
-        let ftp = FtpStream::connect("ftp.debian.org:21").unwrap();
+    pub fn new() -> DebianFtp {
         DebianFtp {
-            ftp: ftp
         }
     }
 
-    fn list_pkgs(&mut self, name: &str) -> Vec<Package> {
-        let mut pkgs = Vec::new();
-        let mut lines = self.ftp.list(Some(
-            format!("debian/pool/main/{}", name).as_str()
-        )).unwrap();
-        for line in lines {
-            let parts: Vec<&str> = line.split_whitespace().collect();
-            let pkg = Package {
-                name: parts[8].to_string(),
-                version: parts[4].to_string(),
-                source: parts[0].to_string(),
-                build: parts[5].to_string(),
-                install: parts[6].to_string(),
-                depends: Vec::new(),
-                provides: Vec::new(),
-                conflicts: Vec::new(),
-                replaces: Vec::new(),
-                arch: Arch::from(parts[3])
-            };
-            pkgs.push(pkg);
+    pub fn list_pkgs(&mut self, name: &str) -> Result<Vec<String>, reqwest::Error> {
+
+        let url = format!("http://ftp.debian.org/debian/pool/main/{}/{}", name.chars().nth(0).unwrap(), name);
+
+        let response = get(url.clone())?;
+        let body = response.text()?;
+        let document = Document::from(body.as_str());
+
+        let mut links = Vec::new();
+        for node in document.find(Name("a")) {
+            if let Some(href) = node.attr("href") {
+                if href.ends_with(".deb") {
+                    links.push(format!("{}/{}", url, href));
+                }
+
+            }
         }
-        pkgs
+
+        Ok(links)
+    }
+
+    pub fn filter_by_arch(&mut self, list: Vec<String>, arch: Arch, name: &str) -> Vec<String> {
+        list.into_iter().filter(|x| {
+            // first, strip .deb from the end
+            let x = x.trim_end_matches(".deb");
+
+            // now extract from the last underscore
+            let mut parts: Vec<&str> = x.split("_").collect();
+
+            let mut slash_parts: Vec<&str> = x.split("/").collect();
+
+            // now extract the arch
+            let found_arch = parts.pop();
+
+            // now check if the arch is the same as the one we want
+            Some(arch.to_string().as_str()) == Some(found_arch.unwrap()) && slash_parts.pop().unwrap().starts_with(name)
+        }).collect()
     }
 }
+
+
