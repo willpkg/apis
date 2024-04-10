@@ -66,10 +66,12 @@ var src_default = {
           latest_version = version;
         }
         // let latest_version = packages[param_p]["latest"];
-        const arch = searchParams.get("a").split("-");
+        const param_a_real = searchParams.get("a") || "";
+        const arch = param_a_real.split("-");
         const param_a = `${arch[0]}-${arch[1]}` || "";
+        console.log(param_a);
         const param_r = searchParams.get("r") || "";
-        if (param_a === "") {
+        if (param_a_real === "") {
           if (param_r === "") {
             return new Response(JSON.stringify({
               v: packages[param_p][latest_version]["version"],
