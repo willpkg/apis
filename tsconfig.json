@@ -5,7 +5,6 @@
         "strict": true,
         "types": [
             "workers-types",
-            "node"
         ],
         "lib": [
             "ESNext",
