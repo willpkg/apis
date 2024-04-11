@@ -160,18 +160,25 @@ export interface ExecutionContext {
 
 export default {
 	async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
+    // TODO add logic
+    // YES THIS WORKS!
     const prisma = new PrismaClient({
       datasourceUrl: env.DATABASE_URL,
     }).$extends(withAccelerate())
-    const package_obj = await prisma.package.findMany({
+    const tableNames = await prisma.$queryRaw`SELECT table_name
+    FROM information_schema.tables
+    WHERE table_schema = 'public'
+    `;
+    const user = await prisma.packages.findMany({
       where: {
         name: {
-          contains: "will"
-        }
+          contains: 'will',
+        },
       },
       cacheStrategy: { swr: 60, ttl: 60 },
     });
-    return new Response(`Hello World from ${package_obj}!`);
+    console.log(user);
+    return new Response(`Hello World from ${user}!`);
 	},
 };
 

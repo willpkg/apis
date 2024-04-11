@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "wrangler dev",
-    "generate": "prisma generate --no-engine"
+    "generate": "prisma generate --no-engine",
+    "generate-watch": "prisma generate --no-engine --watch"
   },
   "author": "Max Bai",
   "license": "GPL-3.0-or-later",
