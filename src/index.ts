@@ -1,7 +1,10 @@
 // src/index.ts
 // BE CAREFUL: 0th element in a package is the latest
 
-var packages = {
+import { PrismaClient } from '@prisma/client/edge'
+import { withAccelerate } from '@prisma/extension-accelerate'
+
+/* var packages = {
   will: {
     latest: "0.1.0",
     "0.1.0": { // this is latest because it is at top
@@ -29,8 +32,10 @@ var packages = {
       }
     },
   },
-};
-var src_default = {
+}; */
+
+/*
+export default {
   async fetch(request) {
     console.log(packages);
     const url = new URL(request.url);
@@ -144,6 +149,29 @@ var src_default = {
     });
   }
 };
-export {
-  src_default as default
+*/
+
+export interface Env {
+  DATABASE_URL: string;
+}
+export interface ExecutionContext {
+
+}
+
+export default {
+	async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
+    const prisma = new PrismaClient({
+      datasourceUrl: env.DATABASE_URL,
+    }).$extends(withAccelerate())
+    const package_obj = await prisma.package.findMany({
+      where: {
+        name: {
+          contains: "will"
+        }
+      },
+      cacheStrategy: { swr: 60, ttl: 60 },
+    });
+    return new Response(`Hello World from ${package_obj}!`);
+	},
 };
+
