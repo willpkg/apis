@@ -3,36 +3,9 @@
 
 import { PrismaClient } from '@prisma/client/edge'
 import { withAccelerate } from '@prisma/extension-accelerate'
+// @ts-ignore
+import index from '../public/index.html';
 
-/* var packages = {
-  will: {
-    latest: "0.1.0",
-    "0.1.0": { // this is latest because it is at top
-      binary: {
-        "linux-x86_64": {
-          "checksum": "",
-          "links": [],
-        },
-        "macos-arm64": {
-          "checksum": "",
-          "links": [],
-        },
-        "macos-x86_64": {
-          "checksum": "",
-          "links": [],
-        },
-        "windows-x86_64": {
-          "checksum": "",
-          "links": [],
-        },
-      },
-      source: {
-        "checksum": "",
-        "links": ["https://gitlab.com/willpkg/cli/-/archive/main/cli-main.tar.gz"],
-      }
-    },
-  },
-}; */
 
 /*
 export default {
@@ -152,7 +125,7 @@ export default {
 */
 
 export interface Env {
-  DATABASE_URL: string;
+    DATABASE_URL: string;
 }
 export interface ExecutionContext {
 
@@ -161,24 +134,48 @@ export interface ExecutionContext {
 export default {
 	async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     // TODO add logic
-    // YES THIS WORKS!
     const prisma = new PrismaClient({
-      datasourceUrl: env.DATABASE_URL,
+        datasourceUrl: env.DATABASE_URL,
     }).$extends(withAccelerate())
     const tableNames = await prisma.$queryRaw`SELECT table_name
     FROM information_schema.tables
     WHERE table_schema = 'public'
     `;
     const user = await prisma.packages.findMany({
-      where: {
-        name: {
-          contains: 'will',
+        where: {
+            name: {
+                contains: 'will',
+            },
         },
-      },
       cacheStrategy: { swr: 60000, ttl: 60000 },
     });
     console.log(user);
-    return new Response(`Hello World from ${user}!`);
-	},
+    
+    var { searchParams, pathname } = new URL(request.url);
+    if (pathname === "/latest") {
+      return new Response('{"v": "0.1.0"}');
+    }
+    else if (pathname === "/package") {
+        // TODO: do this
+    }
+    else if (pathname === "/") {
+        // TODO: finish website
+        return new Response(index, {
+            headers: {
+                "content-type": "text/html;charset=UTF-8",
+            },
+        });
+    }
+    else {
+        return new Response('{"e": "404 Not Found"}', {
+            status: 404,
+            statusText: "The requested resource was not found."
+        });
+    }
+    return new Response('{"e": "500 Internal Server Error"}', {
+        status: 500,
+        statusText: "An unknown error occured on the server."
+    });
+  },
 };
 

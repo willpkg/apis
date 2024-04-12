@@ -1,3 +1,6 @@
 main = "src/index.ts"
 compatibility_date = "2024-04-04"
 name = "apis"
+
+[site]
+bucket = "./public"
