@@ -175,7 +175,7 @@ export default {
           contains: 'will',
         },
       },
-      cacheStrategy: { swr: 60, ttl: 60 },
+      cacheStrategy: { swr: 60000, ttl: 60000 },
     });
     console.log(user);
     return new Response(`Hello World from ${user}!`);
