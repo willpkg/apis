@@ -1,0 +1,6 @@
+main = "src/index.ts"
+compatibility_date = "2024-04-04"
+name = "apis"
+
+[vars]
+DATABASE_URL="prisma://accelerate.prisma-data.net/?api_key=<your_api_key>"
